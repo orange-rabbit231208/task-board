@@ -2,6 +2,30 @@ import { useEffect, useState } from 'react'
 import './App.css'
 
 const STORAGE_KEY = 'task-board.tasks'
+const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土']
+
+function todayString() {
+  const now = new Date()
+  const offset = now.getTimezoneOffset()
+  return new Date(now.getTime() - offset * 60000).toISOString().slice(0, 10)
+}
+
+function weekdayOf(dateStr) {
+  if (!dateStr) return ''
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return WEEKDAYS[new Date(y, m - 1, d).getDay()]
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const [y, m, d] = dateStr.split('-')
+  return `${y}/${m}/${d}(${weekdayOf(dateStr)})`
+}
+
+function formatTimeRange(task) {
+  if (!task.startTime && !task.endTime) return ''
+  return `${task.startTime} 〜 ${task.endTime}`
+}
 
 function App() {
   const [tasks, setTasks] = useState(() => {
@@ -9,6 +33,9 @@ function App() {
     return saved ? JSON.parse(saved) : []
   })
   const [text, setText] = useState('')
+  const [date, setDate] = useState(todayString())
+  const [startTime, setStartTime] = useState('')
+  const [endTime, setEndTime] = useState('')
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
@@ -18,8 +45,13 @@ function App() {
     e.preventDefault()
     const trimmed = text.trim()
     if (!trimmed) return
-    setTasks([...tasks, { id: crypto.randomUUID(), text: trimmed, done: false }])
+    setTasks([
+      ...tasks,
+      { id: crypto.randomUUID(), text: trimmed, done: false, date, startTime, endTime },
+    ])
     setText('')
+    setStartTime('')
+    setEndTime('')
   }
 
   function toggleTask(id) {
@@ -35,7 +67,29 @@ function App() {
   return (
     <div className="board">
       <h1>タスクボード</h1>
+      <div className="date-row">
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          aria-label="日付"
+        />
+        <span className="weekday">{date && `${weekdayOf(date)}曜日`}</span>
+      </div>
       <form className="add-form" onSubmit={addTask}>
+        <input
+          type="time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+          aria-label="開始時間"
+        />
+        <span className="time-separator">〜</span>
+        <input
+          type="time"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          aria-label="終了時間"
+        />
         <input
           type="text"
           value={text}
@@ -57,7 +111,13 @@ function App() {
                   checked={task.done}
                   onChange={() => toggleTask(task.id)}
                 />
-                <span>{task.text}</span>
+                <span className="task-body">
+                  <span className="task-meta">
+                    {formatDate(task.date)}
+                    {formatTimeRange(task) && ` ${formatTimeRange(task)}`}
+                  </span>
+                  <span className="task-title">{task.text}</span>
+                </span>
               </label>
               <button
                 type="button"
