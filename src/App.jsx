@@ -27,6 +27,13 @@ function formatTimeRange(task) {
   return `${task.startTime} 〜 ${task.endTime}`
 }
 
+function byStartTime(a, b) {
+  if (!a.startTime && !b.startTime) return 0
+  if (!a.startTime) return 1
+  if (!b.startTime) return -1
+  return a.startTime.localeCompare(b.startTime)
+}
+
 function App() {
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
@@ -63,6 +70,8 @@ function App() {
   function deleteTask(id) {
     setTasks(tasks.filter((task) => task.id !== id))
   }
+
+  const sortedTasks = [...tasks].sort(byStartTime)
 
   return (
     <div className="board">
@@ -103,7 +112,7 @@ function App() {
         <p className="empty">タスクはまだありません</p>
       ) : (
         <ul className="task-list">
-          {tasks.map((task) => (
+          {sortedTasks.map((task) => (
             <li key={task.id} className={task.done ? 'task done' : 'task'}>
               <label>
                 <input
