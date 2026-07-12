@@ -54,7 +54,7 @@ function App() {
     if (!trimmed) return
     setTasks([
       ...tasks,
-      { id: crypto.randomUUID(), text: trimmed, done: false, date, startTime, endTime },
+      { id: crypto.randomUUID(), text: trimmed, done: false, important: false, date, startTime, endTime },
     ])
     setText('')
     setStartTime('')
@@ -64,6 +64,12 @@ function App() {
   function toggleTask(id) {
     setTasks(tasks.map((task) =>
       task.id === id ? { ...task, done: !task.done } : task
+    ))
+  }
+
+  function toggleImportant(id) {
+    setTasks(tasks.map((task) =>
+      task.id === id ? { ...task, important: !task.important } : task
     ))
   }
 
@@ -112,32 +118,44 @@ function App() {
         <p className="empty">タスクはまだありません</p>
       ) : (
         <ul className="task-list">
-          {sortedTasks.map((task) => (
-            <li key={task.id} className={task.done ? 'task done' : 'task'}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={task.done}
-                  onChange={() => toggleTask(task.id)}
-                />
-                <span className="task-body">
-                  <span className="task-meta">
-                    {formatDate(task.date)}
-                    {formatTimeRange(task) && ` ${formatTimeRange(task)}`}
+          {sortedTasks.map((task) => {
+            const rowClass = task.done ? 'task done' : task.important ? 'task important' : 'task'
+            return (
+              <li key={task.id} className={rowClass}>
+                <label className="task-label">
+                  <input
+                    type="checkbox"
+                    checked={task.done}
+                    onChange={() => toggleTask(task.id)}
+                  />
+                  <span className="task-body">
+                    <span className="task-meta">
+                      {formatDate(task.date)}
+                      {formatTimeRange(task) && ` ${formatTimeRange(task)}`}
+                    </span>
+                    <span className="task-title">{task.text}</span>
                   </span>
-                  <span className="task-title">{task.text}</span>
-                </span>
-              </label>
-              <button
-                type="button"
-                className="delete-button"
-                aria-label="削除"
-                onClick={() => deleteTask(task.id)}
-              >
-                削除
-              </button>
-            </li>
-          ))}
+                </label>
+                <label className="important-toggle">
+                  <input
+                    type="checkbox"
+                    checked={task.important}
+                    onChange={() => toggleImportant(task.id)}
+                    aria-label="重要"
+                  />
+                  重要
+                </label>
+                <button
+                  type="button"
+                  className="delete-button"
+                  aria-label="削除"
+                  onClick={() => deleteTask(task.id)}
+                >
+                  削除
+                </button>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>
