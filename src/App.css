@@ -198,8 +198,8 @@
 
 .memo-cat {
   position: absolute;
-  right: 10px;
-  bottom: -14px;
+  right: -10px;
+  bottom: -46px;
   height: 76px;
   width: auto;
   pointer-events: none;
