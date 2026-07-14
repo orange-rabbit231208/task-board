@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 const STORAGE_KEY = 'task-board.tasks'
+const NOTES_STORAGE_KEY = 'task-board.notes'
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土']
 
 function todayString() {
@@ -53,6 +54,10 @@ function App() {
     const saved = localStorage.getItem(STORAGE_KEY)
     return saved ? JSON.parse(saved) : []
   })
+  const [notes, setNotes] = useState(() => {
+    const saved = localStorage.getItem(NOTES_STORAGE_KEY)
+    return saved ? JSON.parse(saved) : {}
+  })
   const [selectedDate, setSelectedDate] = useState(todayString())
   const [text, setText] = useState('')
   const [startTime, setStartTime] = useState('')
@@ -65,6 +70,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
   }, [tasks])
+
+  useEffect(() => {
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes))
+  }, [notes])
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -80,6 +89,10 @@ function App() {
     setSelectedDate(e.target.value)
   }
 
+  function updateNote(value) {
+    setNotes({ ...notes, [selectedDate]: value })
+  }
+
   function addTask(e) {
     e.preventDefault()
     const trimmed = text.trim()
@@ -89,7 +102,6 @@ function App() {
       {
         id: crypto.randomUUID(),
         text: trimmed,
-        memo: '',
         done: false,
         important: false,
         date: isRoutine ? '' : selectedDate,
@@ -112,12 +124,6 @@ function App() {
   function toggleImportant(id) {
     setTasks(tasks.map((task) =>
       task.id === id ? { ...task, important: !task.important } : task
-    ))
-  }
-
-  function updateMemo(id, memo) {
-    setTasks(tasks.map((task) =>
-      task.id === id ? { ...task, memo } : task
     ))
   }
 
@@ -210,105 +216,116 @@ function App() {
         </label>
         <button type="submit">追加</button>
       </form>
-      {visibleTasks.length === 0 ? (
-        <p className="empty">タスクはまだありません</p>
-      ) : (
-        <ul className="task-list">
-          {visibleTasks.map((task) => {
-            const stateClass = task.done ? 'task done' : task.important ? 'task important' : 'task'
-            const cardClass = task.date ? stateClass : `${stateClass} pinned`
+      <div className="board-columns">
+        <div className="task-column">
+          {visibleTasks.length === 0 ? (
+            <p className="empty">タスクはまだありません</p>
+          ) : (
+            <ul className="task-list">
+              {visibleTasks.map((task) => {
+                const stateClass = task.done ? 'task done' : task.important ? 'task important' : 'task'
+                const cardClass = task.date ? stateClass : `${stateClass} pinned`
 
-            return (
-              <li key={task.id} className="task-row">
-                {editingId === task.id ? (
-                  <form className={`${cardClass} edit-form`} onSubmit={(e) => saveEdit(e, task.id)}>
-                    <input
-                      type="time"
-                      value={editDraft.startTime}
-                      onChange={(e) => setEditDraft({ ...editDraft, startTime: e.target.value })}
-                      aria-label="開始時間"
-                    />
-                    <span className="time-separator">〜</span>
-                    <input
-                      type="time"
-                      value={editDraft.endTime}
-                      onChange={(e) => setEditDraft({ ...editDraft, endTime: e.target.value })}
-                      aria-label="終了時間"
-                    />
-                    <input
-                      type="text"
-                      value={editDraft.text}
-                      onChange={(e) => setEditDraft({ ...editDraft, text: e.target.value })}
-                      aria-label="タスク名"
-                    />
-                    <label className="routine-toggle">
-                      <input
-                        type="checkbox"
-                        checked={editDraft.routine}
-                        onChange={(e) => setEditDraft({ ...editDraft, routine: e.target.checked })}
-                      />
-                      毎日
-                    </label>
-                    <button type="submit">保存</button>
-                    <button type="button" onClick={cancelEdit}>
-                      キャンセル
-                    </button>
-                  </form>
-                ) : (
-                  <div className={`${cardClass} task-main`}>
-                    <label className="task-label">
-                      <input
-                        type="checkbox"
-                        checked={task.done}
-                        onChange={() => toggleTask(task.id)}
-                      />
-                      <span className="task-body">
-                        <span className="task-meta">{taskMetaLabel(task)}</span>
-                        <span className="task-title">{task.text}</span>
-                      </span>
-                    </label>
-                    {task.date && (
-                      <label className="important-toggle">
+                if (editingId === task.id) {
+                  return (
+                    <li key={task.id} className={cardClass}>
+                      <form className="edit-form" onSubmit={(e) => saveEdit(e, task.id)}>
+                        <input
+                          type="time"
+                          value={editDraft.startTime}
+                          onChange={(e) => setEditDraft({ ...editDraft, startTime: e.target.value })}
+                          aria-label="開始時間"
+                        />
+                        <span className="time-separator">〜</span>
+                        <input
+                          type="time"
+                          value={editDraft.endTime}
+                          onChange={(e) => setEditDraft({ ...editDraft, endTime: e.target.value })}
+                          aria-label="終了時間"
+                        />
+                        <input
+                          type="text"
+                          value={editDraft.text}
+                          onChange={(e) => setEditDraft({ ...editDraft, text: e.target.value })}
+                          aria-label="タスク名"
+                        />
+                        <label className="routine-toggle">
+                          <input
+                            type="checkbox"
+                            checked={editDraft.routine}
+                            onChange={(e) => setEditDraft({ ...editDraft, routine: e.target.checked })}
+                          />
+                          毎日
+                        </label>
+                        <button type="submit">保存</button>
+                        <button type="button" onClick={cancelEdit}>
+                          キャンセル
+                        </button>
+                      </form>
+                    </li>
+                  )
+                }
+
+                return (
+                  <li key={task.id} className={cardClass}>
+                    <div className="task-main">
+                      <label className="task-label">
                         <input
                           type="checkbox"
-                          checked={task.important}
-                          onChange={() => toggleImportant(task.id)}
-                          aria-label="重要"
+                          checked={task.done}
+                          onChange={() => toggleTask(task.id)}
                         />
-                        重要
+                        <span className="task-body">
+                          <span className="task-meta">{taskMetaLabel(task)}</span>
+                          <span className="task-title">{task.text}</span>
+                        </span>
                       </label>
-                    )}
-                    <button
-                      type="button"
-                      className="edit-button"
-                      aria-label="編集"
-                      onClick={() => startEdit(task)}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      type="button"
-                      className="delete-button"
-                      aria-label="削除"
-                      onClick={() => deleteTask(task.id)}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                )}
-                <textarea
-                  className={`${cardClass} task-memo-input`}
-                  value={task.memo}
-                  onChange={(e) => updateMemo(task.id, e.target.value)}
-                  placeholder="メモ"
-                  aria-label="メモ"
-                  maxLength={500}
-                />
-              </li>
-            )
-          })}
-        </ul>
-      )}
+                      {task.date && (
+                        <label className="important-toggle">
+                          <input
+                            type="checkbox"
+                            checked={task.important}
+                            onChange={() => toggleImportant(task.id)}
+                            aria-label="重要"
+                          />
+                          重要
+                        </label>
+                      )}
+                      <button
+                        type="button"
+                        className="edit-button"
+                        aria-label="編集"
+                        onClick={() => startEdit(task)}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        type="button"
+                        className="delete-button"
+                        aria-label="削除"
+                        onClick={() => deleteTask(task.id)}
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+        <div className="memo-column">
+          <span className="memo-heading">{formatDate(selectedDate)}のメモ</span>
+          <textarea
+            className="notes-textarea"
+            value={notes[selectedDate] || ''}
+            onChange={(e) => updateNote(e.target.value)}
+            placeholder="メモを入力"
+            aria-label="メモ"
+            maxLength={500}
+          />
+        </div>
+      </div>
     </div>
   )
 }
