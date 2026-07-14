@@ -337,7 +337,7 @@ function App() {
           )}
         </div>
         <div className="memo-column">
-          <span className="memo-heading">📋 {formatDate(selectedDate)}のメモ</span>
+          <span className="memo-heading">{formatDate(selectedDate)}のメモ</span>
           <div className="notes-box">
             <textarea
               className="notes-textarea"
