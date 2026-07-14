@@ -173,10 +173,6 @@
   color: var(--text-h);
 }
 
-.notes-box {
-  position: relative;
-}
-
 .notes-textarea {
   width: 100%;
   min-height: 320px;
@@ -194,15 +190,6 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
-}
-
-.memo-cat {
-  position: absolute;
-  right: -10px;
-  bottom: -46px;
-  height: 76px;
-  width: auto;
-  pointer-events: none;
 }
 
 .empty {
@@ -289,6 +276,7 @@
 .task-meta {
   font-size: 13px;
   color: var(--text);
+  white-space: nowrap;
 }
 
 .task-meta.pill {
