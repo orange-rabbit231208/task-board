@@ -1,5 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import headerBanner from './assets/decorations/header-banner.png'
+import catPeek from './assets/decorations/cat-peek.png'
+import catSparkle from './assets/decorations/cat-sparkle.png'
+import catBowtie from './assets/decorations/cat-bowtie.png'
+import catPlant from './assets/decorations/cat-plant.png'
+import pawDivider from './assets/decorations/paw-divider.png'
+import iconTrash from './assets/decorations/icon-trash.png'
+import iconEditGreen from './assets/decorations/icon-edit-green.png'
+import iconEditOrange from './assets/decorations/icon-edit-orange.png'
+import iconEditPurple from './assets/decorations/icon-edit-purple.png'
 
 const STORAGE_KEY = 'task-board.tasks'
 const NOTES_STORAGE_KEY = 'task-board.notes'
@@ -39,6 +49,12 @@ function byStartTime(a, b) {
   if (!a.startTime) return 1
   if (!b.startTime) return -1
   return a.startTime.localeCompare(b.startTime)
+}
+
+function taskDecoration(task) {
+  if (!task.date) return { cat: catPeek, catClass: 'peek', editIcon: iconEditGreen }
+  if (task.important) return { cat: catSparkle, catClass: 'sparkle', editIcon: iconEditOrange }
+  return { cat: catBowtie, catClass: 'bowtie', editIcon: iconEditPurple }
 }
 
 function compareTasks(a, b) {
@@ -175,7 +191,8 @@ function App() {
 
   return (
     <div className="board">
-      <h1>タスクボード</h1>
+      <img src={headerBanner} className="header-banner" alt="タスクボード" />
+      <div className="board-card">
       <div className="date-row">
         <input
           type="date"
@@ -266,6 +283,8 @@ function App() {
                   )
                 }
 
+                const { cat, catClass, editIcon } = taskDecoration(task)
+
                 return (
                   <li key={task.id} className={cardClass}>
                     <div className="task-main">
@@ -276,7 +295,9 @@ function App() {
                           onChange={() => toggleTask(task.id)}
                         />
                         <span className="task-body">
-                          <span className="task-meta">{taskMetaLabel(task)}</span>
+                          <span className={task.date ? 'task-meta' : 'task-meta pill'}>
+                            {taskMetaLabel(task)}
+                          </span>
                           <span className="task-title">{task.text}</span>
                         </span>
                       </label>
@@ -293,21 +314,22 @@ function App() {
                       )}
                       <button
                         type="button"
-                        className="edit-button"
+                        className="icon-button"
                         aria-label="編集"
                         onClick={() => startEdit(task)}
                       >
-                        ✏️
+                        <img src={editIcon} alt="" />
                       </button>
                       <button
                         type="button"
-                        className="delete-button"
+                        className="icon-button"
                         aria-label="削除"
                         onClick={() => deleteTask(task.id)}
                       >
-                        🗑️
+                        <img src={iconTrash} alt="" />
                       </button>
                     </div>
+                    <img src={cat} className={`task-cat ${catClass}`} alt="" />
                   </li>
                 )
               })}
@@ -315,16 +337,21 @@ function App() {
           )}
         </div>
         <div className="memo-column">
-          <span className="memo-heading">{formatDate(selectedDate)}のメモ</span>
-          <textarea
-            className="notes-textarea"
-            value={notes[selectedDate] || ''}
-            onChange={(e) => updateNote(e.target.value)}
-            placeholder="メモを入力"
-            aria-label="メモ"
-            maxLength={500}
-          />
+          <span className="memo-heading">📋 {formatDate(selectedDate)}のメモ</span>
+          <div className="notes-box">
+            <textarea
+              className="notes-textarea"
+              value={notes[selectedDate] || ''}
+              onChange={(e) => updateNote(e.target.value)}
+              placeholder="メモを入力"
+              aria-label="メモ"
+              maxLength={500}
+            />
+            <img src={catPlant} className="memo-cat" alt="" />
+          </div>
         </div>
+      </div>
+      <img src={pawDivider} className="paw-divider" alt="" />
       </div>
     </div>
   )
