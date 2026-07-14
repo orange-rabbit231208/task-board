@@ -215,13 +215,13 @@ function App() {
       ) : (
         <ul className="task-list">
           {visibleTasks.map((task) => {
-            const rowClass = task.done ? 'task done' : task.important ? 'task important' : 'task'
-            const className = task.date ? rowClass : `${rowClass} pinned`
+            const stateClass = task.done ? 'task done' : task.important ? 'task important' : 'task'
+            const cardClass = task.date ? stateClass : `${stateClass} pinned`
 
             return (
-              <li key={task.id} className={className}>
+              <li key={task.id} className="task-row">
                 {editingId === task.id ? (
-                  <form className="edit-form" onSubmit={(e) => saveEdit(e, task.id)}>
+                  <form className={`${cardClass} edit-form`} onSubmit={(e) => saveEdit(e, task.id)}>
                     <input
                       type="time"
                       value={editDraft.startTime}
@@ -255,7 +255,7 @@ function App() {
                     </button>
                   </form>
                 ) : (
-                  <div className="task-main">
+                  <div className={`${cardClass} task-main`}>
                     <label className="task-label">
                       <input
                         type="checkbox"
@@ -297,7 +297,7 @@ function App() {
                   </div>
                 )}
                 <textarea
-                  className="task-memo-input"
+                  className={`${cardClass} task-memo-input`}
                   value={task.memo}
                   onChange={(e) => updateMemo(task.id, e.target.value)}
                   placeholder="メモ"
