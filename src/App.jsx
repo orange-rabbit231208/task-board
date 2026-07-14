@@ -4,6 +4,7 @@ import headerBanner from './assets/decorations/header-banner.png'
 import catPeek from './assets/decorations/cat-peek.png'
 import catSparkle from './assets/decorations/cat-sparkle.png'
 import catBowtie from './assets/decorations/cat-bowtie.png'
+import catPlant from './assets/decorations/cat-plant.png'
 import pawDivider from './assets/decorations/paw-divider.png'
 import iconTrash from './assets/decorations/icon-trash.png'
 import iconEditGreen from './assets/decorations/icon-edit-green.png'
@@ -337,14 +338,17 @@ function App() {
         </div>
         <div className="memo-column">
           <span className="memo-heading">📋 {formatDate(selectedDate)}のメモ</span>
-          <textarea
-            className="notes-textarea"
-            value={notes[selectedDate] || ''}
-            onChange={(e) => updateNote(e.target.value)}
-            placeholder="メモを入力"
-            aria-label="メモ"
-            maxLength={500}
-          />
+          <div className="notes-box">
+            <textarea
+              className="notes-textarea"
+              value={notes[selectedDate] || ''}
+              onChange={(e) => updateNote(e.target.value)}
+              placeholder="メモを入力"
+              aria-label="メモ"
+              maxLength={500}
+            />
+            <img src={catPlant} className="memo-cat" alt="" />
+          </div>
         </div>
       </div>
       <img src={pawDivider} className="paw-divider" alt="" />
