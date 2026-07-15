@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import headerBanner from './assets/decorations/header-banner.png'
-import catPeek from './assets/decorations/cat-peek.png'
-import catSparkle from './assets/decorations/cat-sparkle.png'
-import catBowtie from './assets/decorations/cat-bowtie.png'
-import catPlant from './assets/decorations/cat-plant.png'
+import dogEveryday from './assets/decorations/dog-everyday.png'
+import dogImportant from './assets/decorations/dog-important.png'
+import dogNormal from './assets/decorations/dog-normal.png'
+import dogMemo from './assets/decorations/dog-memo.png'
 import pawDivider from './assets/decorations/paw-divider.png'
 import iconTrash from './assets/decorations/icon-trash.png'
 import iconEditGreen from './assets/decorations/icon-edit-green.png'
@@ -52,9 +52,9 @@ function byStartTime(a, b) {
 }
 
 function taskDecoration(task) {
-  if (!task.date) return { cat: catPeek, catClass: 'peek', editIcon: iconEditGreen }
-  if (task.important) return { cat: catSparkle, catClass: 'sparkle', editIcon: iconEditOrange }
-  return { cat: catBowtie, catClass: 'bowtie', editIcon: iconEditPurple }
+  if (!task.date) return { cat: dogEveryday, catClass: 'everyday', editIcon: iconEditGreen }
+  if (task.important) return { cat: dogImportant, catClass: 'important', editIcon: iconEditOrange }
+  return { cat: dogNormal, catClass: 'normal', editIcon: iconEditPurple }
 }
 
 function compareTasks(a, b) {
@@ -347,7 +347,7 @@ function App() {
               aria-label="メモ"
               maxLength={500}
             />
-            <img src={catPlant} className="memo-cat" alt="" />
+            <img src={dogMemo} className="memo-cat" alt="" />
           </div>
         </div>
       </div>

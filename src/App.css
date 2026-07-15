@@ -198,9 +198,9 @@
 
 .memo-cat {
   position: absolute;
-  right: -10px;
-  bottom: -46px;
-  height: 76px;
+  right: -8px;
+  bottom: -30px;
+  height: 62px;
   width: auto;
   pointer-events: none;
 }
@@ -353,21 +353,21 @@
 .task-cat {
   position: absolute;
   right: 14px;
-  bottom: -8px;
+  bottom: -6px;
   width: auto;
   pointer-events: none;
 }
 
-.task-cat.peek {
-  height: 40px;
+.task-cat.everyday {
+  height: 36px;
 }
 
-.task-cat.sparkle {
-  height: 58px;
+.task-cat.important {
+  height: 42px;
 }
 
-.task-cat.bowtie {
-  height: 52px;
+.task-cat.normal {
+  height: 46px;
 }
 
 .task.done .task-cat {
